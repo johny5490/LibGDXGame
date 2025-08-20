@@ -12,11 +12,17 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.graphics.Pixmap;
 
 public class Util {
-
-    // 共用的離屏批次，避免每次建立/釋放
-    //private static SpriteBatch offscreenBatch;
-
-    /** 從一張 TextureRegion 預先產生「已旋轉」的 TextureRegion（不再需要在 draw 時旋轉） */
+	
+	public static TextureRegion genTextureRegion(String fileName) {
+		return new TextureRegion(new Texture(fileName));
+	}
+	
+    /**
+     * 從一張 TextureRegion 預先產生「已旋轉」的 TextureRegion（不再需要在 draw 時旋轉）
+     * @param src
+     * @param angleDeg
+     * @return
+     */
     public static TextureRegion createRotatedRegion(TextureRegion src, float angleDeg) {
         int w = src.getRegionWidth();
         int h = src.getRegionHeight();

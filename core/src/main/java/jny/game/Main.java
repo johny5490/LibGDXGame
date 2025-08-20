@@ -29,6 +29,7 @@ public class Main extends ApplicationAdapter {
     	
         ScreenUtils.clear(0, 0f, 0f, 1f);                
         batch.begin();
+        //畫背景
         batch.draw(
                 background,
                 0, 0,
@@ -37,7 +38,7 @@ public class Main extends ApplicationAdapter {
             );
         
         //繪製角色
-        character.render(batch);
+        character.draw(batch);
         
         batch.end();
     }
@@ -45,7 +46,7 @@ public class Main extends ApplicationAdapter {
     @Override
     public void dispose() {
         batch.dispose();
-        character.dispoise();
+        
         background.dispose();
     }
 }

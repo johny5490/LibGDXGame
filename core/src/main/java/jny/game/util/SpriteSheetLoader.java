@@ -41,17 +41,8 @@ public class SpriteSheetLoader {
         return list;
     }
 
-    /** 
-     * 取得所有格子（一維陣列）
-     */
-    public Array<TextureRegion> getAllRegions() {
-        Array<TextureRegion> list = new Array<>();
-        for (int row = 0; row < regions.length; row++) {
-            for (int col = 0; col < regions[row].length; col++) {
-                list.add(regions[row][col]);
-            }
-        }
-        return list;
+    public TextureRegion[][] getAllRegions() {       
+        return regions;
     }
 
     /** 
@@ -60,19 +51,5 @@ public class SpriteSheetLoader {
     public void dispose() {
         texture.dispose();
     }
-    
-    public static void main(String[] args) {
-    	// 載入 sprite sheet，每格 64x64
-    	SpriteSheetLoader sheet = new SpriteSheetLoader("character.png", 64, 64);
 
-    	// 取得單格
-    	TextureRegion firstFrame = sheet.getRegion(0, 0);
-
-    	// 取得第一列（例如「向下走」動畫）
-    	Array<TextureRegion> walkDownFrames = sheet.getRow(0);
-
-    	// 取得所有格子（如果要自己組合）
-    	Array<TextureRegion> allFrames = sheet.getAllRegions();
-
-	}
 }

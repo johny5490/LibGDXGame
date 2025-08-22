@@ -1,31 +1,45 @@
 package jny.game;
 
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
     
-    private Character character;
+    //public List<Character> characterList = new ArrayList<>();
     
     private Texture background;
     
     @Override
     public void create() {
-        batch = new SpriteBatch();        
+    	
+    	batch = new SpriteBatch();        
         background = new Texture("background.png");
-        character = new Character();        
+        for(int i=0;i<10;i++) {
+        	Character character = new ArcherCharacter();
+            //初始位置
+            character.setLocation(i*(2 + character.width) , Gdx.graphics.getHeight()/2);
+            GameObjStorage.getInstance().characterList.add(character);
+        }
         
     }
 
     @Override
     public void render() {
     	//更新邏輯
-    	character.update();
+    	 for(Character character:GameObjStorage.getInstance().characterList) {
+    		 character.update();
+    	 }
     	
         ScreenUtils.clear(0, 0f, 0f, 1f);                
         batch.begin();
@@ -38,15 +52,16 @@ public class Main extends ApplicationAdapter {
             );
         
         //繪製角色
-        character.draw(batch);
+        for(Character character:GameObjStorage.getInstance().characterList ) {
+        	character.draw(batch);
+        }
         
         batch.end();
     }
 
     @Override
     public void dispose() {
-        batch.dispose();
-        
+        batch.dispose();        
         background.dispose();
     }
 }

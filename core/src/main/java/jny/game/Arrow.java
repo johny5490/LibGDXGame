@@ -1,53 +1,75 @@
 package jny.game;
 
+import java.util.EnumMap;
+
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 
-public class Arrow {
+import jny.game.Character.Direction;
+import jny.game.util.Util;
+
+/**
+ * 箭
+ */
+public class Arrow implements GameObject{
     private float x, y;            // 當前位置
     private float vx, vy;          // 速度向量
-    private float speed = 400f;    // 飛行速度（像素/秒）
-    private boolean active = true; // 是否還在飛行
-
-    private TextureRegion texture; // 箭的圖
-
-    public Arrow(float startX, float startY, float targetX, float targetY, TextureRegion texture) {
+    private float speed = 200f;    // 飛行速度（像素/秒）
+    private float width = 64f;
+    private float height = 64f;    
+    /**
+     * 箭面對不同方向的圖
+     */
+    //EnumMap<Direction, TextureRegion> directionTexture;
+    TextureRegion textureRegion;
+   
+    boolean isDead;
+    
+    float targetX, targetY;
+    
+    public Arrow(TextureRegion textureRegion, float startX, float startY, float targetX, float targetY) {
         this.x = startX;
         this.y = startY;
-        this.texture = texture;
-
+        this.targetX = targetX;
+        this.targetY = targetY;
         // 計算單位方向向量
         float dx = targetX - startX;
         float dy = targetY - startY;
         float len = (float)Math.sqrt(dx*dx + dy*dy);
         this.vx = dx / len * speed;
         this.vy = dy / len * speed;
+        this.textureRegion=textureRegion;
+        
+        GameObjectManager.getInstance().add(this);
     }
-
-    public void update(float delta) {
-        if (!active) return;
-        x += vx * delta;
-        y += vy * delta;
+    
+    @Override
+    public void update(float delta) {        
+        //擊中目標或超出視窗要消除(從GameObjStorage移除)...not yet
+        //沒考慮目標的移動? 目標的寬高先寫死
+        if(Util.rectVsRect(new Rectangle(x, y, width, height), new Rectangle(targetX, targetY, 64, 64))) {
+        	isDead = true;        	
+        }else {
+        	//往目標移動
+            x += vx * delta;
+            y += vy * delta;
+        }
+        
     }
-
-    public void draw(SpriteBatch batch) {
-        if (active) {
-            batch.draw(texture, x, y);
+    
+    @Override
+    public void render(SpriteBatch batch) {
+        if (!isDead) {        	
+            batch.draw(textureRegion, x, y);
         }
     }
+    
+	@Override
+	public boolean isDead() {		
+		return isDead;
+	}
 
-    public boolean checkHit(float targetX, float targetY, float radius) {
-        float dx = targetX - x;
-        float dy = targetY - y;
-        if (dx*dx + dy*dy <= radius*radius) {
-            active = false; // 命中 → 箭消失
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
 }
 

@@ -6,9 +6,16 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
+
+import jny.game.Character.Direction;
+
 import com.badlogic.gdx.graphics.Pixmap;
 
 public class Util {
@@ -18,7 +25,7 @@ public class Util {
 	}
 	
     /**
-     * 從一張 TextureRegion 預先產生「已旋轉」的 TextureRegion（不再需要在 draw 時旋轉）
+     * 從一張 TextureRegion 預先產生「已旋轉」的 TextureRegion
      * @param src
      * @param angleDeg
      * @return
@@ -86,4 +93,59 @@ public class Util {
         return new TextureRegion(result);
     }
 
+    public static Direction getFaceTo(float x, float y, float targetX, float targetY) {
+    	float dx = targetX - x;
+    	float dy = targetY - y;
+    	if (Math.abs(dx) > Math.abs(dy)) {
+    		return dx > 0 ? Direction.RIGHT : Direction.LEFT;
+        } else {
+        	return dy > 0 ? Direction.UP : Direction.DOWN;
+        }  
+    }
+    
+    /**
+     * 矩形 vs 矩形碰撞 
+     */
+    public static boolean rectVsRect(Rectangle a, Rectangle b) {
+        return a.overlaps(b);
+    }
+
+    /** 圓形 vs 圓形碰撞 */
+    public static boolean circleVsCircle(Circle a, Circle b) {
+        float dx = a.x - b.x;
+        float dy = a.y - b.y;
+        float distance2 = dx * dx + dy * dy;
+        float radiusSum = a.radius + b.radius;
+        return distance2 <= radiusSum * radiusSum;
+    }
+
+    /** 圓形 vs 矩形碰撞 */
+    public static boolean circleVsRect(Circle c, Rectangle r) {
+        // 找出圓心到矩形最近點
+        float closestX = clamp(c.x, r.x, r.x + r.width);
+        float closestY = clamp(c.y, r.y, r.y + r.height);
+
+        float dx = c.x - closestX;
+        float dy = c.y - closestY;
+        return dx * dx + dy * dy <= c.radius * c.radius;
+    }
+
+    /** 線段 vs 矩形碰撞 */
+    public static boolean lineVsRect(Vector2 start, Vector2 end, Rectangle r) {
+        // 檢查線段是否與矩形四條邊相交
+        Vector2 topLeft = new Vector2(r.x, r.y + r.height);
+        Vector2 topRight = new Vector2(r.x + r.width, r.y + r.height);
+        Vector2 bottomLeft = new Vector2(r.x, r.y);
+        Vector2 bottomRight = new Vector2(r.x + r.width, r.y);
+
+        return Intersector.intersectSegments(start, end, bottomLeft, bottomRight, null)
+                || Intersector.intersectSegments(start, end, bottomLeft, topLeft, null)
+                || Intersector.intersectSegments(start, end, topLeft, topRight, null)
+                || Intersector.intersectSegments(start, end, topRight, bottomRight, null);
+    }
+    
+    /** 小工具：夾住數值在 min~max */
+    private static float clamp(float val, float min, float max) {
+        return Math.max(min, Math.min(max, val));
+    }
 }

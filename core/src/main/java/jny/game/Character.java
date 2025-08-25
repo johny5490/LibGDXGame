@@ -16,11 +16,15 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 
+import jny.game.Character.Direction;
 import jny.game.util.CharacterAssembler;
 import jny.game.util.SpriteSheetLoader;
 import jny.game.util.Util;
 
-public abstract class Character {
+/**
+ * 角色
+ */
+public abstract class Character implements GameObject{
     // 動作種類
     public enum Action { IDLE, WALK, ATTACK }
     // 方向（這裡先用4方向）
@@ -40,26 +44,29 @@ public abstract class Character {
 	int width = 64; 
 	int height = 64;
 	
-	public int nation;
+	public int team;
 	
 	public TextureRegion currentFrame;
 	
 	public abstract EnumMap<Action, EnumMap<Direction, Animation<TextureRegion>>> createAnimations();
 	public abstract void init();
-	public abstract void update();
+	
 	
 	public Character() {
 		init();
 		animations = createAnimations();
+		GameObjectManager.getInstance().gameObjList.add(this);
 	}
 	
-    // 設定角色目前狀態
-    public void setState(Action action, Direction dir) {
-        if (currentAction != action || currentDirection != dir) {
+    /**
+     * 設定角色目前動作
+     * @param action
+     */
+    public void setAction(Action action) {
+        if (currentAction != action) {
             stateTime = 0f; // 動作切換時重置時間
         }
-        currentAction = action;
-        currentDirection = dir;
+        currentAction = action;        
     }
     
 	public void setLocation(float x, float y) {
@@ -67,22 +74,20 @@ public abstract class Character {
 		this.y=y;
 	}
 	
-	public void draw(SpriteBatch spriteBatch) {
-		/*
-		stateTime += Gdx.graphics.getDeltaTime();
-		if(animations != null) {
-			Animation<TextureRegion> animation = animations.get(currentAction).get(currentDirection);
-	        TextureRegion frame = animation.getKeyFrame(stateTime);
-	        spriteBatch.draw(frame, x, y);
-		}
-		if (stateTime > 1000f) { // 超過 1000 秒就歸零
-		    stateTime = 0f;
-		}
-		*/
+	public void render(SpriteBatch spriteBatch) {		
 		spriteBatch.draw(currentFrame, x, y);
 	}
 	
 	protected SpriteSheetLoader genLoader(String path, int textureWidth, int textureHeight) {
 		return new SpriteSheetLoader(path, textureWidth, textureHeight);
 	}
+    
+    /**
+     * 面向目標
+     * @param targetX
+     * @param targetY
+     */
+    public void faceTo(float targetX, float targetY) {
+    	currentDirection = Util.getFaceTo(x, y, targetX, targetY);    	   
+    }
 }

@@ -14,6 +14,7 @@ import jny.game.Character.Direction;
 import jny.game.util.CharacterAssembler;
 import jny.game.util.CharacterTextureLoader;
 import jny.game.util.SpriteSheetLoader;
+import jny.game.util.Util;
 
 /**
  * 弓箭手角色
@@ -41,7 +42,7 @@ public class ArcherCharacter extends Character{
 	
 	private float attackDuration;
 	
-	private float attachRange = 50f;
+	private float attachRange = 300f;
 	float targetX;
 	float targetY;
 	
@@ -73,36 +74,84 @@ public class ArcherCharacter extends Character{
 	}
 
 	@Override
-	public void update() {
-		stateTime += Gdx.graphics.getDeltaTime();
+	public void update(float delta) {
+		stateTime += delta;
+		currentFrame = animations.get(currentAction).get(currentDirection).getKeyFrame(stateTime);
 		
-		if(currentAction==Action.ATTACK) {
-			currentFrame = animations.get(currentAction).get(currentDirection).getKeyFrame(stateTime);
-		}else {
-			Character enemyInRange = enemyInRange();
-			if(enemyInRange!=null) {
-				attack(enemyInRange.x, enemyInRange.y);
+		switch (currentAction) {
+		case ATTACK:
+			//動畫播完
+			if(animations.get(currentAction).get(currentDirection).isAnimationFinished(stateTime)) {
+				createArrow();				
+				setAction(Action.IDLE);
 			}
+			
+			break;
+		case IDLE, WALK:
+			attackEnemyInRange();			
+			break;
+		default:
+			break;
 		}
 		
 	}
 	
+	private void createArrow() {
+		//向右箭
+		TextureRegion rightArrow = weaponArrowSheetLoader.getRegion(3, 12);
+		float dx = targetX - x;
+		float dy = targetY - y;
+		//算出箭頭的角度 (弧度)
+		float radians = (float)Math.atan2(dy, dx);
+		//弧度換算角度
+		new Arrow(Util.createRotatedRegion(rightArrow, (float)Math.toDegrees(radians)), x, y, targetX, targetY);
+	}
+
+	private void attackEnemyInRange() {
+		Character enemyInRange = enemyInNearestAttackRange();
+		if(enemyInRange!=null) {
+			attack(enemyInRange.x, enemyInRange.y);
+		}
+	}
+	
     public void attack(float targetX, float targetY) {
-        //attacking = true;
-    	currentAction = Action.ATTACK;
-        stateTime = 0f; // 重置攻擊動畫時間
         this.targetX = targetX;
         this.targetY = targetY;
+    	//面向目標
+        faceTo(targetX, targetY);    	
+    	setAction(Action.ATTACK);
     }
     
-	private Character enemyInRange() {
-		for(Character c : GameObjStorage.getInstance().characterList) {
-			if(c!=this && c.nation!=nation && inRange(c)) {
-				//同國且在攻擊範圍內
-				return c;
+	/**
+	 * 在攻擊範圍內最近的敵人
+	 * @return
+	 */
+	private Character enemyInNearestAttackRange() {
+		//有敵人的最近距離
+		float nearestDisatance = 0f;
+		//最近距離的敵人
+		Character nearestChar = null;
+		for(GameObject obj : GameObjectManager.getInstance().gameObjList) {
+			if(obj instanceof Character) {
+				Character c = (Character) obj;
+				if(c!=this && c.team!=team && inRange(c)) {
+					float dx = c.x - x;
+					float dy = c.y-y;
+					float distance = dx * dx + dy * dy;
+					if(distance <= attachRange * attachRange) {
+						//目標在攻擊範圍內
+						if(nearestChar==null || distance < nearestDisatance) {
+							nearestChar = c;
+							nearestDisatance = distance;
+						}
+						
+					}				
+				}
 			}
+			
 		}
-		return null;
+		
+		return nearestChar;
 	}
 	
 	private boolean inRange(Character c) {
@@ -156,7 +205,7 @@ public class ArcherCharacter extends Character{
 			frames.add(CharacterAssembler.assemble(allPartTextureList, TEXTURE_WIDTH, TEXTURE_HEIGHT));
 		}
 		
-		return new Animation<>(attackDuration, frames, Animation.PlayMode.LOOP);		
+		return new Animation<>(attackDuration, frames, Animation.PlayMode.NORMAL);		
 	}
 
 	private Array<TextureRegion> createWalkAnimation(int row) {
@@ -213,12 +262,10 @@ public class ArcherCharacter extends Character{
     	textRegions.add(textRegion);
     	return new Animation<>(frameDuration, textRegions, Animation.PlayMode.LOOP);
     }
-    
-    private Animation<TextureRegion> makeAnimation(float frameDuration, List<TextureRegion> textRegionList) {
-    	Array<TextureRegion> frames = new Array<>();
-    	for(TextureRegion textRegion:textRegionList) {
-    		frames.add(textRegion);
-    	}    	
-    	return new Animation<>(frameDuration, frames, Animation.PlayMode.LOOP);
-    }
+
+	@Override
+	public boolean isDead() {
+		
+		return false;
+	}
 }

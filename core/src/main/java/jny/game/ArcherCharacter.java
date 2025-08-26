@@ -59,7 +59,6 @@ public class ArcherCharacter extends Character{
 		weaponBowSheetLoader = genLoader("character/bow/WEAPON_bow.png");
 		weaponArrowSheetLoader = genLoader("character/bow/WEAPON_arrow.png");
 		
-		
 		walkDuration = 0.15f;
 		attackDuration = 0.13f;
 	}
@@ -92,8 +91,7 @@ public class ArcherCharacter extends Character{
 			break;
 		default:
 			break;
-		}
-		
+		}		
 	}
 	
 	private void createArrow() {
@@ -104,7 +102,7 @@ public class ArcherCharacter extends Character{
 		//算出箭頭的角度 (弧度)
 		float radians = (float)Math.atan2(dy, dx);
 		//弧度換算角度
-		new Arrow(Util.createRotatedRegion(rightArrow, (float)Math.toDegrees(radians)), x, y, targetX, targetY);
+		new Arrow(Util.createRotatedRegion(rightArrow, (float)Math.toDegrees(radians)), x, y, targetX, targetY, team);
 	}
 
 	private void attackEnemyInRange() {
@@ -131,24 +129,20 @@ public class ArcherCharacter extends Character{
 		float nearestDisatance = 0f;
 		//最近距離的敵人
 		Character nearestChar = null;
-		for(GameObject obj : GameObjectManager.getInstance().gameObjList) {
-			if(obj instanceof Character) {
-				Character c = (Character) obj;
-				if(c!=this && c.team!=team && inRange(c)) {
-					float dx = c.x - x;
-					float dy = c.y-y;
-					float distance = dx * dx + dy * dy;
-					if(distance <= attachRange * attachRange) {
-						//目標在攻擊範圍內
-						if(nearestChar==null || distance < nearestDisatance) {
-							nearestChar = c;
-							nearestDisatance = distance;
-						}
-						
-					}				
+		for(Character c : GV.gameObjectStorage.getCharacterList()) {			
+			if (c != this && c.team != team && inRange(c)) {
+				float dx = c.x - x;
+				float dy = c.y - y;
+				float distance = dx * dx + dy * dy;
+				if (distance <= attachRange * attachRange) {
+					// 目標在攻擊範圍內
+					if (nearestChar == null || distance < nearestDisatance) {
+						nearestChar = c;
+						nearestDisatance = distance;
+					}
+
 				}
 			}
-			
 		}
 		
 		return nearestChar;
@@ -263,9 +257,4 @@ public class ArcherCharacter extends Character{
     	return new Animation<>(frameDuration, textRegions, Animation.PlayMode.LOOP);
     }
 
-	@Override
-	public boolean isDead() {
-		
-		return false;
-	}
 }

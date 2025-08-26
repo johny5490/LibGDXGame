@@ -25,10 +25,6 @@ public class SpearCharacter extends Character{
 		
 	}
 
-	@Override
-	public boolean isDead() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	
 
 }

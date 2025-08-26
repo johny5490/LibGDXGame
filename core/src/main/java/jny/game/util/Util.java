@@ -104,9 +104,9 @@ public class Util {
     }
     
     /**
-     * 矩形 vs 矩形碰撞 
+     * 矩形碰撞 
      */
-    public static boolean rectVsRect(Rectangle a, Rectangle b) {
+    public static boolean isCollided(Rectangle a, Rectangle b) {
         return a.overlaps(b);
     }
 

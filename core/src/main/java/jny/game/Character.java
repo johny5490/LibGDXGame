@@ -24,13 +24,12 @@ import jny.game.util.Util;
 /**
  * 角色
  */
-public abstract class Character implements GameObject{
+public abstract class Character extends GameObject{
     // 動作種類
     public enum Action { IDLE, WALK, ATTACK }
     // 方向（這裡先用4方向）
     public enum Direction { UP, DOWN, LEFT, RIGHT }
 	
-    public float x, y;
 	public float stateTime = 0f;
     public Action currentAction = Action.IDLE;
 	/**
@@ -41,9 +40,7 @@ public abstract class Character implements GameObject{
 	 * 動畫
 	 */
     public EnumMap<Action, EnumMap<Direction, Animation<TextureRegion>>> animations;
-	int width = 64; 
-	int height = 64;
-	
+
 	public int team;
 	
 	public TextureRegion currentFrame;
@@ -55,7 +52,7 @@ public abstract class Character implements GameObject{
 	public Character() {
 		init();
 		animations = createAnimations();
-		GameObjectManager.getInstance().gameObjList.add(this);
+		GV.gameObjectStorage.addCharacter(this);
 	}
 	
     /**
@@ -74,8 +71,10 @@ public abstract class Character implements GameObject{
 		this.y=y;
 	}
 	
-	public void render(SpriteBatch spriteBatch) {		
-		spriteBatch.draw(currentFrame, x, y);
+	public void render(SpriteBatch batch) {
+		if(currentFrame!=null) {
+			batch.draw(currentFrame, x, y);
+		}		
 	}
 	
 	protected SpriteSheetLoader genLoader(String path, int textureWidth, int textureHeight) {

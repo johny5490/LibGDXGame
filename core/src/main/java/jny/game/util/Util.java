@@ -14,7 +14,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-import jny.game.Character.Direction;
+import jny.game.gameObject.Character.Direction;
 
 import com.badlogic.gdx.graphics.Pixmap;
 

@@ -1,4 +1,4 @@
-package jny.game;
+package jny.game.gameObject;
 
 
 import java.util.ArrayList;
@@ -16,7 +16,8 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 
-import jny.game.Character.Direction;
+import jny.game.GameObjectStorage;
+import jny.game.gameObject.Character.Direction;
 import jny.game.util.CharacterAssembler;
 import jny.game.util.SpriteSheetLoader;
 import jny.game.util.Util;
@@ -44,6 +45,13 @@ public abstract class Character extends GameObject{
 	public int team;
 	
 	public TextureRegion currentFrame;
+	//移動的目的地
+	public float moveTargetX;
+	public float moveTargetY;
+	//移動速度
+	public float speed = 100f;
+	//移動目的指示
+	TargetIndicator indicator;
 	
 	public abstract EnumMap<Action, EnumMap<Direction, Animation<TextureRegion>>> createAnimations();
 	public abstract void init();
@@ -52,7 +60,7 @@ public abstract class Character extends GameObject{
 	public Character() {
 		init();
 		animations = createAnimations();
-		GV.gameObjectStorage.addCharacter(this);
+		GameObjectStorage.INSTANCE.addCharacter(this);
 	}
 	
     /**
@@ -73,7 +81,8 @@ public abstract class Character extends GameObject{
 	
 	public void render(SpriteBatch batch) {
 		if(currentFrame!=null) {
-			batch.draw(currentFrame, x, y);
+			//batch.draw(currentFrame, x, y);
+			batch.draw(currentFrame, x-width/2, y-height/2);
 		}		
 	}
 	
@@ -88,5 +97,49 @@ public abstract class Character extends GameObject{
      */
     public void faceTo(float targetX, float targetY) {
     	currentDirection = Util.getFaceTo(x, y, targetX, targetY);    	   
+    }
+    
+    /**
+     * 往某地點移動
+     * @param targetX
+     * @param targetY
+     */
+    public void moveTo(float targetX, float targetY) {
+    	faceTo(targetX, targetY);
+    	setAction(Action.WALK);
+    	moveTargetX = targetX;
+    	moveTargetY = targetY;
+    	if(indicator != null) {
+    		indicator.setPosition(moveTargetX, moveTargetY);
+    	}else {
+    		indicator = new TargetIndicator(moveTargetX, moveTargetY);
+    	}
+    	
+    }
+    
+    /**
+     * 移動,到目的地就發呆
+     * @param delta
+     */
+    public void moving(float delta) {
+    	float dx = moveTargetX - x;
+        float dy = moveTargetY - y;
+        float distance = (float)Math.sqrt(dx * dx + dy * dy);
+
+        if (distance > 1f) { // 避免抖動
+            float vx = dx / distance * speed;
+            float vy = dy / distance * speed;
+            x += vx * delta;
+            y += vy * delta;
+        }else {
+        	//到目的地
+        	setAction(Action.IDLE);
+        	moveTargetX = x;
+        	moveTargetY = y;
+        	if(indicator!=null) {
+        		indicator.gone();
+        		indicator=null;
+        	}        	
+        }
     }
 }

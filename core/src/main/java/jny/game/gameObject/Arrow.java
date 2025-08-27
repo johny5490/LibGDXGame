@@ -1,4 +1,4 @@
-package jny.game;
+package jny.game.gameObject;
 
 import java.util.EnumMap;
 
@@ -7,7 +7,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 
-import jny.game.Character.Direction;
+import jny.game.GameObjectStorage;
+import jny.game.gameObject.Character.Direction;
 import jny.game.util.Util;
 
 /**
@@ -15,12 +16,20 @@ import jny.game.util.Util;
  */
 public class Arrow extends GameObject{    
     private float vx, vy;          // 速度向量
-    private float speed = 200f;    // 飛行速度（像素/秒）
-  
+    /**
+     * 飛行速度（像素/秒）
+     */
+    private float speed = 300f;  
+    /**
+     * 箭的圖
+     */
     TextureRegion textureRegion;
    
     float targetX, targetY;
-    int team;
+    /**
+     * 隊伍,用來區分遊戲物件彼此是否敵對
+     */
+    public int team;
     
     public Arrow(TextureRegion textureRegion, float startX, float startY, float targetX, float targetY, int team) {
         this.x = startX;
@@ -35,7 +44,7 @@ public class Arrow extends GameObject{
         this.vy = dy / len * speed;
         this.textureRegion=textureRegion;
         this.team=team;
-        GV.gameObjectStorage.addArrow(this);
+        GameObjectStorage.INSTANCE.addArrow(this);
     }
     
     @Override
@@ -48,10 +57,16 @@ public class Arrow extends GameObject{
     @Override
     public void render(SpriteBatch batch) {
         if (!isGone) {        	
-            batch.draw(textureRegion, x, y);
+            //batch.draw(textureRegion, x, y);
+        	batch.draw(textureRegion, x-width/2, y-height/2);
         }
     }
-    
+
+	@Override
+	public void dispose() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }
 

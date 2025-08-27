@@ -6,17 +6,25 @@ import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import jny.game.gameObject.Arrow;
+import jny.game.gameObject.Character;
+import jny.game.gameObject.GameObject;
+import jny.game.gameObject.TargetIndicator;
+
 /**
  * 存放所有遊戲物件
  */
 public class GameObjectStorage {
 
+	public static GameObjectStorage INSTANCE = new GameObjectStorage();
+	
 	private List<Character> characterList = new ArrayList<>();
-	
-	private List<GameObject> pendingCharAdd = new ArrayList<>();
-	
 	private List<Arrow> arrowList = new ArrayList<>();
+	private List<TargetIndicator> targetIndicatorList = new ArrayList<>();
+	
+	private List<GameObject> pendingCharAdd = new ArrayList<>();	
 	private List<Arrow> pendingArrowAdd = new ArrayList<>();
+	private List<TargetIndicator> pendingtargetIndicatorAdd = new ArrayList<>();
 	
 	/**
 	 * 新增物件（不會馬上進入主清單）,
@@ -30,6 +38,10 @@ public class GameObjectStorage {
 	
 	public void addArrow(Arrow arrow) {
 		pendingArrowAdd.add(arrow);
+	}
+	
+	public void addTargetIndicator(TargetIndicator indicator) {
+		pendingtargetIndicatorAdd.add(indicator);
 	}
 	
 	public List<Character> getCharacterList() {
@@ -47,6 +59,7 @@ public class GameObjectStorage {
     public void update(float delta) {        
     	update(delta, characterList, pendingCharAdd);
     	update(delta, arrowList, pendingArrowAdd);
+    	update(delta, targetIndicatorList, pendingtargetIndicatorAdd);
     }
 
     private void update(float delta, List objectList, List peddingList) {
@@ -56,7 +69,8 @@ public class GameObjectStorage {
             GameObject obj = it.next();
             obj.update(delta);
             if (obj.isGone) {
-                it.remove();
+                it.remove(); 
+                obj.dispose();
             }
         }
 
@@ -70,6 +84,7 @@ public class GameObjectStorage {
     public void render(SpriteBatch batch) {    	
     	renderList(batch, characterList);
     	renderList(batch, arrowList);
+    	renderList(batch, targetIndicatorList);
     }
     
     private void renderList(SpriteBatch batch, List list) {

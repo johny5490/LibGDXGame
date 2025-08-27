@@ -1,4 +1,4 @@
-package jny.game;
+package jny.game.gameObject;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -9,8 +9,9 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 
-import jny.game.Character.Action;
-import jny.game.Character.Direction;
+import jny.game.GameObjectStorage;
+import jny.game.gameObject.Character.Action;
+import jny.game.gameObject.Character.Direction;
 import jny.game.util.CharacterAssembler;
 import jny.game.util.CharacterTextureLoader;
 import jny.game.util.SpriteSheetLoader;
@@ -43,6 +44,7 @@ public class ArcherCharacter extends Character{
 	private float attackDuration;
 	
 	private float attachRange = 300f;
+	//弓箭射擊的方位
 	float targetX;
 	float targetY;
 	
@@ -86,9 +88,11 @@ public class ArcherCharacter extends Character{
 			}
 			
 			break;
-		case IDLE, WALK:
-			attackEnemyInRange();			
+		case IDLE:
+			attackEnemyInRange();
 			break;
+		case WALK:
+			moving(delta);
 		default:
 			break;
 		}		
@@ -129,7 +133,7 @@ public class ArcherCharacter extends Character{
 		float nearestDisatance = 0f;
 		//最近距離的敵人
 		Character nearestChar = null;
-		for(Character c : GV.gameObjectStorage.getCharacterList()) {			
+		for(Character c : GameObjectStorage.INSTANCE.getCharacterList()) {			
 			if (c != this && c.team != team && inRange(c)) {
 				float dx = c.x - x;
 				float dy = c.y - y;
@@ -256,5 +260,11 @@ public class ArcherCharacter extends Character{
     	textRegions.add(textRegion);
     	return new Animation<>(frameDuration, textRegions, Animation.PlayMode.LOOP);
     }
+
+	@Override
+	public void dispose() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

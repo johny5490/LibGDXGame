@@ -25,6 +25,9 @@ public class GameWorld {
 	 * 玩家操控的角色
 	 */
 	Character playerChar;
+	/**
+	 * 遊戲地圖的範圍
+	 */
 	int mapWidth = 1000, mapHeight = 1000;
 	
 	public GameWorld(SpriteBatch batch, OrthographicCamera camera) {

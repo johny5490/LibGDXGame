@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import jny.game.GameObjectStorage;
 
 /**
- * 移動目的指示
+ * 移動目的指示,以圓圈表示
  */
 public class TargetIndicator extends GameObject{
 	
@@ -26,6 +26,8 @@ public class TargetIndicator extends GameObject{
 		//藍色
 		pixmap.setColor(0, 0, 1, 1); 
 		pixmap.drawCircle((int)width/2, (int)height/2, radius);
+		//多畫一圈讓線條粗一點
+		pixmap.drawCircle((int)width/2, (int)height/2, radius-1);
 		circleTexture = new Texture(pixmap);
 	}
 	

@@ -30,6 +30,8 @@ public class GameWorld {
 	 */
 	int mapWidth = 1000, mapHeight = 1000;
 	
+	private boolean pause;
+	
 	public GameWorld(SpriteBatch batch, OrthographicCamera camera) {
 		this.batch = batch;
 		this.camera = camera;
@@ -48,17 +50,24 @@ public class GameWorld {
        
 	}
 	
-	public void handleInput() {
+	private void handleInput() {
 		if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
-			
 			Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
 			//轉換成遊戲世界座標
 			camera.unproject(touchPos);
 			playerChar.moveTo(touchPos.x, touchPos.y);
 		}
+		
 	}
 	
 	public void update(float delta) {
+		if(pause) {
+			return;
+		}
+		
+		//處理輸入（滑鼠/鍵盤)
+		handleInput();
+		
 		camera.position.set(playerChar.x, playerChar.y, 0);
 		// 限制攝影機不要超出地圖邊界
         camera.position.x = MathUtils.clamp(camera.position.x, camera.viewportWidth / 2f, mapWidth - camera.viewportWidth / 2f);
@@ -103,5 +112,24 @@ public class GameWorld {
 	
 	public void dispose() {       
         background.dispose();
+	}
+	
+	/**
+	 * 暫停
+	 */
+	public void pause() {
+		pause = true;
+	}
+	
+	public void setPause(boolean pause) {
+		this.pause=pause;
+	}
+	
+	/**
+	 * 是否暫停
+	 * @return
+	 */
+	public boolean isPause() {
+		return pause;
 	}
 }

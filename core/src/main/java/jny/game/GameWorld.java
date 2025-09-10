@@ -30,7 +30,6 @@ public class GameWorld {
 	 */
 	int mapWidth = 1000, mapHeight = 1000;
 	
-	private boolean pause;
 	
 	public GameWorld(SpriteBatch batch, OrthographicCamera camera) {
 		this.batch = batch;
@@ -61,7 +60,7 @@ public class GameWorld {
 	}
 	
 	public void update(float delta) {
-		if(pause) {
+		if(GV.PAUSE) {
 			return;
 		}
 		
@@ -114,22 +113,4 @@ public class GameWorld {
         background.dispose();
 	}
 	
-	/**
-	 * 暫停
-	 */
-	public void pause() {
-		pause = true;
-	}
-	
-	public void setPause(boolean pause) {
-		this.pause=pause;
-	}
-	
-	/**
-	 * 是否暫停
-	 * @return
-	 */
-	public boolean isPause() {
-		return pause;
-	}
 }

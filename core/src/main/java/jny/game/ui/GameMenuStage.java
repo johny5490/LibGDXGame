@@ -6,6 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+import jny.game.GV;
+
 public class GameMenuStage extends Stage{
 
 	public GameMenuStage() {
@@ -17,7 +19,7 @@ public class GameMenuStage extends Stage{
         returnGameButton.addListener(new ClickListener() {
         	@Override
         	public void clicked(InputEvent event, float x, float y) {
-        		
+        		GV.PAUSE = false;
         	}
         });
         

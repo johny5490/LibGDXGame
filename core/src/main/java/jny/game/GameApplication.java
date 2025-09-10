@@ -90,7 +90,7 @@ public class GameApplication extends ApplicationAdapter{
         gameWorld.render();
         batch.end();
         
-        if(gameWorld.isPause()) {        	
+        if(GV.PAUSE) {        	
         	gameMenuStage.act(delta);
             gameMenuStage.draw();
         }
@@ -99,8 +99,8 @@ public class GameApplication extends ApplicationAdapter{
     
     private void handleInput() {
     	if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {    		
-    		gameWorld.setPause(!gameWorld.isPause());    		
-			if(gameWorld.isPause()) {
+    		GV.PAUSE = !GV.PAUSE;
+			if(GV.PAUSE) {
 				//暫停才加入選單
 				multiplexer.addProcessor(gameMenuStage);
 			}else {

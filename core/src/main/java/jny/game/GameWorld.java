@@ -1,6 +1,7 @@
 package jny.game;
 
 import java.util.Iterator;
+import java.util.Queue;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
+import jny.game.event.JnyInputEvent;
 import jny.game.gameObject.ArcherCharacter;
 import jny.game.gameObject.Arrow;
 import jny.game.gameObject.Character;
@@ -30,10 +32,12 @@ public class GameWorld {
 	 */
 	int mapWidth = 1000, mapHeight = 1000;
 	
+	Queue<JnyInputEvent> inputEventQueue;
 	
-	public GameWorld(SpriteBatch batch, OrthographicCamera camera) {
+	public GameWorld(SpriteBatch batch, OrthographicCamera camera, Queue<JnyInputEvent> inputEventQueue) {
 		this.batch = batch;
 		this.camera = camera;
+		this.inputEventQueue=inputEventQueue;
 		
 		background = new Texture("background.png");
 		Character char1 = new ArcherCharacter();
@@ -49,7 +53,9 @@ public class GameWorld {
        
 	}
 	
-	private void handleInput() {
+	private void handleInputEvent() {
+		
+		
 		if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
 			Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
 			//轉換成遊戲世界座標
@@ -60,12 +66,10 @@ public class GameWorld {
 	}
 	
 	public void update(float delta) {
-		if(GV.PAUSE) {
-			return;
-		}
+		
 		
 		//處理輸入（滑鼠/鍵盤)
-		handleInput();
+		handleInputEvent();
 		
 		camera.position.set(playerChar.x, playerChar.y, 0);
 		// 限制攝影機不要超出地圖邊界

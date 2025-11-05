@@ -8,9 +8,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import jny.game.GV;
 
-public class GameMenuStage extends Stage{
+/**
+ * 遊戲暫停選單
+ */
+public class PauseMenuStage extends Stage{
 
-	public GameMenuStage() {
+	public PauseMenuStage() {
 		Table table = new Table();
         table.setFillParent(true);         
         table.center();
